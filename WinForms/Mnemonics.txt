@@ -1,0 +1,28 @@
+Mnemonic aka "Access Key":
+
+A - 
+B - &Bridges
+C - 
+D - &Decorations
+E - Tr&ees
+F - Copy &From
+G - 
+H - 
+I - 
+J - 
+K - 
+L - &Lots
+M - 
+N - Show Empty &Neighborhoods
+O - Copy T&o
+P - 
+Q - 
+R - &Roads
+S - Brow&se
+T - &Terrain
+U - 
+V - &Versioned Backups
+W - Bro&wse
+X - 
+Y - 
+Z - 
