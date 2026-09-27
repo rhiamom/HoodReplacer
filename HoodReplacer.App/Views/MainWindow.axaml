@@ -1,0 +1,72 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="HoodReplacer.App.Views.MainWindow"
+        Title="HoodReplacer" Width="860" Height="520" MinWidth="720" MinHeight="470">
+
+  <Grid Margin="16" RowDefinitions="Auto,Auto,*,Auto">
+
+    <StackPanel Grid.Row="0" Spacing="4">
+      <TextBlock Text="Replace Neighborhood Terrain" FontSize="19" FontWeight="SemiBold"/>
+      <TextBlock TextWrapping="Wrap" Opacity="0.75" FontSize="12"
+                 Text="Moves a neighborhood onto a different terrain. Pick a source (a neighborhood or a SimCity 4 .sc4 file) and the neighborhood to change, tick what to carry across, then press Copy. Lots are never copied — Fix re-seats the destination's own lots onto the new ground."/>
+    </StackPanel>
+
+    <Grid Grid.Row="1" Margin="0,14,0,8" ColumnDefinitions="*,16,*,16,Auto">
+      <TextBlock Grid.Column="0" Text="Copy from" FontWeight="SemiBold"/>
+      <TextBlock Grid.Column="2" Text="Copy to" FontWeight="SemiBold"/>
+    </Grid>
+
+    <Grid Grid.Row="2" ColumnDefinitions="*,16,*,16,Auto">
+      <DockPanel Grid.Column="0">
+        <Button DockPanel.Dock="Bottom" Name="BrowseSrc" Content="Browse for .sc4…" Margin="0,8,0,0" HorizontalAlignment="Stretch"/>
+        <ListBox Name="ListSrc"/>
+      </DockPanel>
+
+      <DockPanel Grid.Column="2">
+        <Button DockPanel.Dock="Bottom" Name="BrowseDst" Content="Browse…" Margin="0,8,0,0" HorizontalAlignment="Stretch"/>
+        <ListBox Name="ListDst"/>
+      </DockPanel>
+
+      <Border Grid.Column="4" BorderBrush="#c8c6be" BorderThickness="1" CornerRadius="4" Padding="14,10" VerticalAlignment="Top">
+        <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto"
+              ColumnDefinitions="Auto,78,98,78">
+          <TextBlock Grid.Row="0" Grid.Column="1" Text="Replace"       FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,0,0,8"/>
+          <TextBlock Grid.Row="0" Grid.Column="2" Text="Fix Elevation" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,0,0,8"/>
+          <TextBlock Grid.Row="0" Grid.Column="3" Text="Remove"        FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,0,0,8"/>
+
+          <TextBlock Grid.Row="1" Grid.Column="0" Text="Terrain"     VerticalAlignment="Center" Margin="0,0,14,6"/>
+          <TextBlock Grid.Row="2" Grid.Column="0" Text="Roads"       VerticalAlignment="Center" Margin="0,0,14,6"/>
+          <TextBlock Grid.Row="3" Grid.Column="0" Text="Bridges"     VerticalAlignment="Center" Margin="0,0,14,6"/>
+          <TextBlock Grid.Row="4" Grid.Column="0" Text="Trees"       VerticalAlignment="Center" Margin="0,0,14,6"/>
+          <TextBlock Grid.Row="5" Grid.Column="0" Text="Decorations" VerticalAlignment="Center" Margin="0,0,14,6"/>
+          <TextBlock Grid.Row="6" Grid.Column="0" Text="Lots"        VerticalAlignment="Center" Margin="0,0,14,0"/>
+
+          <CheckBox Name="ReplTerrain" Grid.Row="1" Grid.Column="1" IsChecked="True" HorizontalAlignment="Center"/>
+          <CheckBox Name="ReplRoads"   Grid.Row="2" Grid.Column="1" HorizontalAlignment="Center"/>
+          <CheckBox Name="ReplBridges" Grid.Row="3" Grid.Column="1" HorizontalAlignment="Center"/>
+          <CheckBox Name="ReplTrees"   Grid.Row="4" Grid.Column="1" HorizontalAlignment="Center"/>
+          <CheckBox Name="ReplDeco"    Grid.Row="5" Grid.Column="1" HorizontalAlignment="Center"/>
+
+          <CheckBox Name="FixRoads"   Grid.Row="2" Grid.Column="2" IsChecked="True" HorizontalAlignment="Center"/>
+          <CheckBox Name="FixBridges" Grid.Row="3" Grid.Column="2" IsChecked="True" HorizontalAlignment="Center"/>
+          <CheckBox Name="FixTrees"   Grid.Row="4" Grid.Column="2" IsChecked="True" HorizontalAlignment="Center"/>
+          <CheckBox Name="FixDeco"    Grid.Row="5" Grid.Column="2" IsChecked="True" HorizontalAlignment="Center"/>
+          <CheckBox Name="FixLots"    Grid.Row="6" Grid.Column="2" IsChecked="True" HorizontalAlignment="Center"/>
+
+          <CheckBox Name="DelRoads"   Grid.Row="2" Grid.Column="3" HorizontalAlignment="Center"/>
+          <CheckBox Name="DelBridges" Grid.Row="3" Grid.Column="3" HorizontalAlignment="Center"/>
+          <CheckBox Name="DelTrees"   Grid.Row="4" Grid.Column="3" HorizontalAlignment="Center"/>
+          <CheckBox Name="DelDeco"    Grid.Row="5" Grid.Column="3" HorizontalAlignment="Center"/>
+        </Grid>
+      </Border>
+    </Grid>
+
+    <Grid Grid.Row="3" Margin="0,14,0,0" ColumnDefinitions="Auto,Auto,*,Auto,Auto">
+      <CheckBox Grid.Column="0" Name="ShowEmpty"   Content="Show empty neighborhoods" Margin="0,0,18,0"/>
+      <CheckBox Grid.Column="1" Name="MultiBackup" Content="Versioned backups"/>
+      <TextBlock Grid.Column="2" Name="Status" VerticalAlignment="Center" Margin="18,0" Opacity="0.75" TextTrimming="CharacterEllipsis"/>
+      <Button Grid.Column="3" Name="ExitButton" Content="Exit" Width="80" Margin="0,0,10,0"/>
+      <Button Grid.Column="4" Name="CopyButton" Content="Copy" Width="90" IsDefault="True"/>
+    </Grid>
+  </Grid>
+</Window>

@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HoodReplacer.Engine", "Hood
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HoodReplacer.SmokeTest", "HoodReplacer.SmokeTest\HoodReplacer.SmokeTest.csproj", "{CDC2EC01-3FB4-43EE-BF0B-29B85B701829}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HoodReplacer.App", "HoodReplacer.App\HoodReplacer.App.csproj", "{7F562CB2-6BF6-4C64-8BC2-970B097CCB35}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,9 @@ Global
 		{CDC2EC01-3FB4-43EE-BF0B-29B85B701829}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CDC2EC01-3FB4-43EE-BF0B-29B85B701829}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CDC2EC01-3FB4-43EE-BF0B-29B85B701829}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7F562CB2-6BF6-4C64-8BC2-970B097CCB35}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7F562CB2-6BF6-4C64-8BC2-970B097CCB35}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7F562CB2-6BF6-4C64-8BC2-970B097CCB35}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7F562CB2-6BF6-4C64-8BC2-970B097CCB35}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
