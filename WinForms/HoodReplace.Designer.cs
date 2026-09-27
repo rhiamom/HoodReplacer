@@ -427,10 +427,10 @@ namespace HoodReplace
             // 
             this.OptionTable.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.OptionTable.ColumnCount = 4;
-            this.OptionTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 114F));
-            this.OptionTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 90F));
-            this.OptionTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 100F));
+            this.OptionTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 82F));
             this.OptionTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 80F));
+            this.OptionTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 140F));
+            this.OptionTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 82F));
             this.OptionTable.Controls.Add(this.HeadReplace, 1, 0);
             this.OptionTable.Controls.Add(this.HeadFix, 2, 0);
             this.OptionTable.Controls.Add(this.HeadRemove, 3, 0);

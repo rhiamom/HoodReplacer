@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Build-check project: compiles Mootilda's original WinForms sources as
+       net8.0-windows so the form can be verified on macOS. Her .NET 2.0
+       HoodReplace.csproj is kept untouched beside it; that one still needs
+       Visual Studio and the SimPE 0.66 DLLs. Here the SimPE surface comes
+       from the vendored Filetypes stubs instead. -->
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <RootNamespace>HoodReplace</RootNamespace>
+    <AssemblyName>HoodReplace</AssemblyName>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <NoWarn>$(NoWarn);CS8981;CA1416;SYSLIB0011</NoWarn>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <EnableDefaultItems>false</EnableDefaultItems>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="HoodReplace.cs" />
+    <Compile Include="HoodReplace.Designer.cs" />
+    <Compile Include="ResizeTerrain.cs" />
+    <Compile Include="ResizeTerrain.Designer.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="R_DESC.cs" /><Compile Include="R_NHTG.cs" />
+    <Compile Include="R_NHTR.cs" /><Compile Include="R_SC4.cs" />
+    <Compile Include="R_Terrain.cs" />
+    <EmbeddedResource Include="HoodReplace.resx"><LogicalName>HoodReplace.HoodReplace.resources</LogicalName></EmbeddedResource>
+    <EmbeddedResource Include="ResizeTerrain.resx"><LogicalName>HoodReplace.ResizeTerrain.resources</LogicalName></EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Filetypes\Filetypes.csproj" />
+  </ItemGroup>
+</Project>
