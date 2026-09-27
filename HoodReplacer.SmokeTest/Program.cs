@@ -24,6 +24,32 @@ internal static class Program
         return d is null ? null : new R_NHTG(pkg, d);
     }
 
+    private static List<(int x, int y, float elev)> ReadLots(GeneratableFile pkg)
+    {
+        var result = new List<(int, int, float)>();
+        foreach (IPackedFileDescriptor d in pkg.FindFiles(0x0BF999E7))
+        {
+            var lot = new R_DESC(pkg, d, false);
+            result.Add((lot.Top, lot.Left, lot.Elevation));
+        }
+        return result;
+    }
+
+    private static Dictionary<string,string>? ReadStructs(GeneratableFile pkg)
+    {
+        IPackedFileDescriptor d = pkg.FindFile(0xABD0DC63, 0, 0xFFFFFFFF, 0);
+        if (d is null) return null;
+        var r = new R_NHTR(pkg, d);
+        static string H(byte[]? b) => b is null || b.Length == 0 ? "(empty)"
+            : Convert.ToHexString(System.Security.Cryptography.MD5.HashData(b))[..8] + $" [{b.Length}b]";
+        return new Dictionary<string,string> {
+            ["Roads"] = H(r.Roads),
+            ["Bridges"] = H(r.Bridges),
+            ["Trees"] = H(r.Trees),
+            ["Decorations"] = H(r.Deco),
+        };
+    }
+
     private static int Main(string[] args)
     {
         Console.WriteLine("HoodReplacer smoke test");
@@ -60,6 +86,10 @@ internal static class Program
             return 0;
         }
 
+        bool inPlace = args.Contains("--in-place");
+        bool fixLots = args.Contains("--fix-lots");
+        bool fixStruct = args.Contains("--fix-structures");
+        bool delStruct = args.Contains("--del-structures");
         string srcCode = args[0], dstCode = args[1];
         if (!dims.ContainsKey(dstCode))
         { Console.WriteLine($"\nFAIL: unknown destination hood code."); return 1; }
@@ -84,16 +114,28 @@ internal static class Program
         Console.WriteLine($"\nRound-trip: {srcCode} ({sw}x{sh})  ->  {dstCode} ({dw}x{dh})");
 
         // Work on a scratch copy so the real hood is never touched.
-        string scratch = Path.Combine(Path.GetTempPath(), "hoodreplacer-smoke");
-        Directory.CreateDirectory(scratch);
-        string workPath = Path.Combine(scratch, Path.GetFileName(dstPath));
-        System.IO.File.Copy(dstPath, workPath, true);
-        Console.WriteLine($"Working copy: {workPath}");
+        string workPath;
+        if (inPlace)
+        {
+            workPath = dstPath;
+            Console.WriteLine($"*** IN-PLACE on the real neighborhood: {workPath}");
+        }
+        else
+        {
+            string scratch = Path.Combine(Path.GetTempPath(), "hoodreplacer-smoke");
+            Directory.CreateDirectory(scratch);
+            workPath = Path.Combine(scratch, Path.GetFileName(dstPath));
+            System.IO.File.Copy(dstPath, workPath, true);
+            Console.WriteLine($"Working copy: {workPath}");
+        }
 
         // BEFORE
         var dstPkg = SimPe.Packages.File.LoadFromFile(workPath);
         var before = ReadTerrain(dstPkg)!.GetTerrain(0, 0, dh, dw);
+        var lotsBefore = ReadLots(dstPkg);
+        var structBefore = ReadStructs(dstPkg);
         dstPkg.ForgetUpdate(); dstPkg.Close();
+        Console.WriteLine($"Lots in destination: {lotsBefore.Count}");
 
         // Expected = source terrain
         bool srcIsSc4 = string.Equals(Path.GetExtension(srcPath), ".SC4", StringComparison.OrdinalIgnoreCase);
@@ -111,7 +153,13 @@ internal static class Program
             return new ResizeChoice { ResizeToFit = true, ScaleElevation = false, PercentElevation = req.PercentElevation };
         };
         engine.ConfirmHandler = _ => true;
-        var report = engine.Run(srcPath, workPath, new ReplaceOptions { ReplaceTerrain = true });
+        var report = engine.Run(srcPath, workPath, new ReplaceOptions
+        {
+            ReplaceTerrain = true,
+            FixLots = fixLots,
+            FixRoads = fixStruct, FixBridges = fixStruct, FixTrees = fixStruct, FixDecorations = fixStruct,
+            DeleteRoads = delStruct, DeleteBridges = delStruct, DeleteTrees = delStruct, DeleteDecorations = delStruct,
+        });
 
         foreach (var l in report.Log) Console.WriteLine($"   log: {l}");
         foreach (var e in report.Errors) Console.WriteLine($"   ERR: {e}");
@@ -121,6 +169,8 @@ internal static class Program
         // AFTER — re-read from disk, not from memory
         var reread = SimPe.Packages.File.LoadFromFile(workPath);
         var after = ReadTerrain(reread)!.GetTerrain(0, 0, dh, dw);
+        var lotsAfter = ReadLots(reread);
+        var structAfter = ReadStructs(reread);
         reread.ForgetUpdate(); reread.Close();
 
         bool sameSize = (sw == dw && sh == dh);
@@ -148,6 +198,32 @@ internal static class Program
         Console.WriteLine($"   elevation source     : {se.lo:F1} .. {se.hi:F1}  mean {se.mean:F1}");
         Console.WriteLine($"   elevation after      : {sa.lo:F1} .. {sa.hi:F1}  mean {sa.mean:F1}");
         Console.WriteLine($"   (TS2 water level is 312.5)");
+
+        if (fixLots && lotsAfter.Count > 0)
+        {
+            const float water = 312.5f, lift = .1f;
+            int seated = 0, off = 0; float worstLot = 0;
+            for (int i = 0; i < lotsAfter.Count; i++)
+            {
+                var (x, y, elev) = lotsAfter[i];
+                float ground = after[y, x];
+                float want = ground < water ? water + lift : ground;
+                float d = Math.Abs(elev - want);
+                if (d < 0.001f) seated++; else { off++; worstLot = Math.Max(worstLot, d); }
+            }
+            int moved = 0;
+            for (int i = 0; i < lotsAfter.Count && i < lotsBefore.Count; i++)
+                if (Math.Abs(lotsAfter[i].elev - lotsBefore[i].elev) > 0.001f) moved++;
+            Console.WriteLine($"   lots re-seated on new terrain : {seated}/{lotsAfter.Count}  (off {off}, worst {worstLot:F2})");
+            Console.WriteLine($"   lots whose elevation changed  : {moved}");
+        }
+
+        if (structBefore is not null && structAfter is not null)
+        {
+            Console.WriteLine("   structures (bytes)   before -> after");
+            foreach (var k in structBefore.Keys)
+                Console.WriteLine($"      {k,-12} {structBefore[k],-20} -> {structAfter[k],-20}{(structBefore[k] != structAfter[k] ? "  CHANGED" : "  same")}");
+        }
 
         bool backupOk = report.BackupPath is not null && System.IO.File.Exists(report.BackupPath);
         Console.WriteLine($"   backup written       : {backupOk}");
