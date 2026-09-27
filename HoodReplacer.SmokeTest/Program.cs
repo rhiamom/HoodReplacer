@@ -61,10 +61,25 @@ internal static class Program
         }
 
         string srcCode = args[0], dstCode = args[1];
-        if (!dims.ContainsKey(srcCode) || !dims.ContainsKey(dstCode))
-        { Console.WriteLine($"\nFAIL: unknown hood code."); return 1; }
+        if (!dims.ContainsKey(dstCode))
+        { Console.WriteLine($"\nFAIL: unknown destination hood code."); return 1; }
 
-        var (sw, sh, srcPath) = dims[srcCode];
+        // Source may be a hood code or a path to an .SC4 terrain.
+        int sw, sh; string srcPath;
+        if (dims.ContainsKey(srcCode))
+            (sw, sh, srcPath) = dims[srcCode];
+        else if (System.IO.File.Exists(srcCode))
+        {
+            srcPath = srcCode;
+            var sc4pkg = SimPe.Packages.File.LoadFromFile(srcPath);
+            var d4 = sc4pkg.FindFile(0xA9DD6FF4, 0, 0xE98F9525, 1);
+            if (d4 is null) { Console.WriteLine("FAIL: no SC4 terrain resource (0xA9DD6FF4) in that file."); return 1; }
+            var t4 = new R_SC4(sc4pkg, d4);
+            sw = t4.Width; sh = t4.Height;
+            Console.WriteLine($"SC4 source: {Path.GetFileName(srcPath)}  {sw} x {sh}");
+            sc4pkg.ForgetUpdate(); sc4pkg.Close();
+        }
+        else { Console.WriteLine($"\nFAIL: source is neither a hood code nor a file: {srcCode}"); return 1; }
         var (dw, dh, dstPath) = dims[dstCode];
         Console.WriteLine($"\nRound-trip: {srcCode} ({sw}x{sh})  ->  {dstCode} ({dw}x{dh})");
 
@@ -81,11 +96,21 @@ internal static class Program
         dstPkg.ForgetUpdate(); dstPkg.Close();
 
         // Expected = source terrain
+        bool srcIsSc4 = string.Equals(Path.GetExtension(srcPath), ".SC4", StringComparison.OrdinalIgnoreCase);
         var srcPkg = SimPe.Packages.File.LoadFromFile(srcPath);
-        var expected = ReadTerrain(srcPkg)!.GetTerrain(0, 0, sh, sw);
+        R_Terrain srcTerr = srcIsSc4
+            ? new R_SC4(srcPkg, srcPkg.FindFile(0xA9DD6FF4, 0, 0xE98F9525, 1))
+            : ReadTerrain(srcPkg)!;
+        var expected = srcTerr.GetTerrain(0, 0, sh, sw);
         srcPkg.ForgetUpdate(); srcPkg.Close();
 
         var engine = new ReplaceEngine();
+        engine.ResizeHandler = req =>
+        {
+            Console.WriteLine($"   resize requested: {req.SrcWidth}x{req.SrcHeight} -> {req.DstWidth}x{req.DstHeight}, scale-to-fit");
+            return new ResizeChoice { ResizeToFit = true, ScaleElevation = false, PercentElevation = req.PercentElevation };
+        };
+        engine.ConfirmHandler = _ => true;
         var report = engine.Run(srcPath, workPath, new ReplaceOptions { ReplaceTerrain = true });
 
         foreach (var l in report.Log) Console.WriteLine($"   log: {l}");
@@ -98,23 +123,41 @@ internal static class Program
         var after = ReadTerrain(reread)!.GetTerrain(0, 0, dh, dw);
         reread.ForgetUpdate(); reread.Close();
 
+        bool sameSize = (sw == dw && sh == dh);
         int mismatch = 0, changed = 0;
         float worst = 0;
         for (int y = 0; y < dh; y++)
             for (int x = 0; x < dw; x++)
             {
-                if (after[y, x] != expected[y, x]) { mismatch++; worst = Math.Max(worst, Math.Abs(after[y, x] - expected[y, x])); }
+                if (sameSize && after[y, x] != expected[y, x]) { mismatch++; worst = Math.Max(worst, Math.Abs(after[y, x] - expected[y, x])); }
                 if (after[y, x] != before[y, x]) changed++;
             }
 
         Console.WriteLine($"\n   cells                : {dw * dh}");
-        Console.WriteLine($"   differ from source   : {mismatch}  (worst delta {worst})");
+        if (sameSize) Console.WriteLine($"   differ from source   : {mismatch}  (worst delta {worst})");
         Console.WriteLine($"   changed vs. original : {changed}");
+
+        static (float lo, float hi, double mean) Stats(float[,] a)
+        {
+            float lo = float.MaxValue, hi = float.MinValue; double sum = 0; int n = 0;
+            foreach (float v in a) { lo = Math.Min(lo, v); hi = Math.Max(hi, v); sum += v; n++; }
+            return (lo, hi, sum / n);
+        }
+        var sb = Stats(before); var sa = Stats(after); var se = Stats(expected);
+        Console.WriteLine($"   elevation before     : {sb.lo:F1} .. {sb.hi:F1}  mean {sb.mean:F1}");
+        Console.WriteLine($"   elevation source     : {se.lo:F1} .. {se.hi:F1}  mean {se.mean:F1}");
+        Console.WriteLine($"   elevation after      : {sa.lo:F1} .. {sa.hi:F1}  mean {sa.mean:F1}");
+        Console.WriteLine($"   (TS2 water level is 312.5)");
 
         bool backupOk = report.BackupPath is not null && System.IO.File.Exists(report.BackupPath);
         Console.WriteLine($"   backup written       : {backupOk}");
 
-        if (mismatch == 0 && changed > 0 && backupOk) { Console.WriteLine("\nOK — terrain matches the source exactly."); return 0; }
+        if (!sameSize)
+        {
+            Console.WriteLine("   (sizes differ — terrain was rescaled, so no cell-for-cell comparison)");
+            if (changed > 0 && backupOk) { Console.WriteLine("\nOK — terrain was rewritten and backed up."); return 0; }
+        }
+        else if (mismatch == 0 && changed > 0 && backupOk) { Console.WriteLine("\nOK — terrain matches the source exactly."); return 0; }
         Console.WriteLine("\nFAIL");
         return 1;
     }
