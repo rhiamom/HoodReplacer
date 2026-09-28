@@ -59,6 +59,18 @@ internal static class Program
         if (hoods is null) { Console.WriteLine("FAIL: no Sims 2 user folder found."); return 1; }
         Console.WriteLine($"Neighborhoods: {hoods}\n");
 
+        if (args.Contains("--list-hoods"))
+        {
+            foreach (bool showEmpty in new[] { false, true })
+            {
+                var built = HoodReplace.HoodList.Build(hoods, showEmpty);
+                Console.WriteLine($"\n--- showEmpty={showEmpty}: {built.Count} entries ---");
+                foreach (var h in built)
+                    Console.WriteLine($"   {(h.IsMain ? "main" : "sub "),-5} {h.FolderCode,-6} {h.Name}");
+            }
+            return 0;
+        }
+
         var list = NeighborhoodCatalog.List(hoods);
         var dims = new Dictionary<string, (int W, int H, string Path)>();
 

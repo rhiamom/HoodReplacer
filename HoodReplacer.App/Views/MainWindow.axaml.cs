@@ -20,7 +20,7 @@ namespace HoodReplacer.App.Views;
 
 public partial class MainWindow : Window
 {
-    private sealed record Entry(string Label, string Path, bool IsSc4)
+    private sealed record Entry(string Label, string Path, bool IsSc4, bool Browsed = false)
     {
         public override string ToString() => Label;
     }
@@ -32,6 +32,7 @@ public partial class MainWindow : Window
     {
         AvaloniaXamlLoader.Load(this);
         Opened += (_, _) => LoadNeighborhoods();
+        this.Get<CheckBox>("ShowEmpty").IsCheckedChanged += (_, _) => LoadNeighborhoods();
         this.Get<Button>("BrowseSrc").Click += BrowseSrcClick;
         this.Get<Button>("BrowseDst").Click += BrowseDstClick;
         this.Get<Button>("ExitButton").Click += (_, _) => Close();
@@ -49,18 +50,27 @@ public partial class MainWindow : Window
             return;
         }
 
+        // Keep anything the user browsed to; only the scanned hoods are rebuilt.
+        var browsedSrc = _sources.Where(x => x.Browsed).ToList();
+        var browsedDst = _targets.Where(x => x.Browsed).ToList();
+
+        bool showEmpty = this.Get<CheckBox>("ShowEmpty").IsChecked == true;
         _sources.Clear();
         _targets.Clear();
-        foreach (var n in NeighborhoodCatalog.List(folder))
+        _sources.AddRange(browsedSrc);
+        _targets.AddRange(browsedDst);
+
+        foreach (var h in HoodList.Build(folder, showEmpty))
         {
-            _sources.Add(new Entry($"{n.Name}  ({n.Code})", n.MainPackagePath, false));
-            _targets.Add(new Entry($"{n.Name}  ({n.Code})", n.MainPackagePath, false));
+            _sources.Add(new Entry(h.ToString(), h.PackagePath, false));
+            _targets.Add(new Entry(h.ToString(), h.PackagePath, false));
         }
         this.Get<ListBox>("ListSrc").ItemsSource = null;
         this.Get<ListBox>("ListSrc").ItemsSource = _sources;
         this.Get<ListBox>("ListDst").ItemsSource = null;
         this.Get<ListBox>("ListDst").ItemsSource = _targets;
-        Say($"{_targets.Count} neighborhoods.");
+        int scanned = _targets.Count(x => !x.Browsed);
+        Say($"{scanned} neighborhoods and sub-neighborhoods.");
     }
 
     private async void BrowseSrcClick(object? sender, RoutedEventArgs e)
@@ -78,7 +88,7 @@ public partial class MainWindow : Window
         if (f is null) return;
         string path = f.Path.LocalPath;
         bool sc4 = string.Equals(Path.GetExtension(path), ".sc4", StringComparison.OrdinalIgnoreCase);
-        var entry = new Entry(Path.GetFileNameWithoutExtension(path) + (sc4 ? "  (SC4)" : ""), path, sc4);
+        var entry = new Entry(Path.GetFileNameWithoutExtension(path) + (sc4 ? "  (SC4)" : ""), path, sc4, Browsed: true);
         _sources.Insert(0, entry);
         var lb = this.Get<ListBox>("ListSrc");
         lb.ItemsSource = null;
@@ -97,7 +107,7 @@ public partial class MainWindow : Window
         var f = files.FirstOrDefault();
         if (f is null) return;
         string path = f.Path.LocalPath;
-        var entry = new Entry(Path.GetFileNameWithoutExtension(path), path, false);
+        var entry = new Entry(Path.GetFileNameWithoutExtension(path), path, false, Browsed: true);
         _targets.Insert(0, entry);
         var lb = this.Get<ListBox>("ListDst");
         lb.ItemsSource = null;
