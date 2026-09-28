@@ -3,3 +3,7 @@ obj/
 dist/
 *.user
 .DS_Store
+build/*.app
+build/*.dmg
+build/stage/
+build/dmgstage/
