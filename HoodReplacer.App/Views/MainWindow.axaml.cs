@@ -146,12 +146,7 @@ public partial class MainWindow : Window
 
         var engine = new ReplaceEngine();
         engine.ConfirmHandler = msg => Dialogs.ConfirmBlocking(this, "Terrain sizes differ", msg);
-        engine.ResizeHandler = req => new ResizeChoice
-        {
-            ResizeToFit = true,
-            ScaleElevation = false,
-            PercentElevation = req.PercentElevation,
-        };
+        engine.ResizeHandler = req => ResizeDialog.Ask(this, req);
 
         Say("Working…");
         this.Get<Button>("CopyButton").IsEnabled = false;

@@ -1,0 +1,37 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="HoodReplacer.App.Views.ResizeDialog"
+        Title="Mismatched Terrain Size"
+        Width="440" SizeToContent="Height" CanResize="False"
+        WindowStartupLocation="CenterOwner">
+  <StackPanel Margin="20" Spacing="14">
+
+    <TextBlock Text="Terrain sizes are different" FontWeight="SemiBold" FontSize="15"/>
+    <TextBlock Name="Expl" TextWrapping="Wrap" Opacity="0.85"/>
+    <TextBlock Name="Sizes" TextWrapping="Wrap" Opacity="0.6" FontSize="12"/>
+
+    <CheckBox Name="ResizeToFit" Content="Resize to fit"/>
+
+    <!-- placement mode -->
+    <Grid Name="ResizeGroup" ColumnDefinitions="Auto,12,120" RowDefinitions="Auto,8,Auto">
+      <TextBlock Grid.Row="0" Grid.Column="0" Text="Top"  VerticalAlignment="Center"/>
+      <NumericUpDown Grid.Row="0" Grid.Column="2" Name="TopUpDown"  Minimum="0" Increment="1" FormatString="0"/>
+      <TextBlock Grid.Row="2" Grid.Column="0" Text="Left" VerticalAlignment="Center"/>
+      <NumericUpDown Grid.Row="2" Grid.Column="2" Name="LeftUpDown" Minimum="0" Increment="1" FormatString="0"/>
+    </Grid>
+
+    <!-- scale mode -->
+    <StackPanel Name="ScalePanel" Spacing="12" IsVisible="False">
+      <CheckBox Name="ScaleElevation" Content="Scale elevation"/>
+      <Grid Name="ScaleGroup" ColumnDefinitions="Auto,12,120" IsVisible="False">
+        <TextBlock Grid.Column="0" Text="Percent" VerticalAlignment="Center"/>
+        <NumericUpDown Grid.Column="2" Name="ElevationUpDown" Increment="1" FormatString="0"/>
+      </Grid>
+    </StackPanel>
+
+    <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right">
+      <Button Name="ButtonCancel" Content="Cancel" MinWidth="90"/>
+      <Button Name="ButtonOK" Content="OK" MinWidth="90" IsDefault="True"/>
+    </StackPanel>
+  </StackPanel>
+</Window>
