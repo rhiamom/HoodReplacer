@@ -68,12 +68,14 @@
       </Border>
     </Grid>
 
-    <Grid Grid.Row="3" Margin="0,14,0,0" ColumnDefinitions="Auto,Auto,*,Auto,Auto">
+    <Grid Grid.Row="3" Margin="0,14,0,0" ColumnDefinitions="Auto,Auto,Auto,*,Auto,Auto">
       <CheckBox Grid.Column="0" Name="ShowEmpty"   Content="Show empty neighborhoods" Margin="0,0,18,0"/>
-      <CheckBox Grid.Column="1" Name="MultiBackup" Content="Versioned backups"/>
-      <TextBlock Grid.Column="2" Name="Status" VerticalAlignment="Center" Margin="18,0" Opacity="0.75" TextTrimming="CharacterEllipsis"/>
-      <Button Grid.Column="3" Name="ExitButton" Content="Exit" Width="80" Margin="0,0,10,0"/>
-      <Button Grid.Column="4" Name="CopyButton" Content="Copy" Width="90" IsDefault="True"/>
+      <CheckBox Grid.Column="1" Name="MultiBackup" Content="Versioned backups" Margin="0,0,18,0"/>
+      <CheckBox Grid.Column="2" Name="UpdatePicture" Content="Update preview picture" IsChecked="True"
+                ToolTip.Tip="Swap in the picture that came with the new terrain, so the neighborhood chooser shows it. The old one is kept as .png.bkp."/>
+      <TextBlock Grid.Column="3" Name="Status" VerticalAlignment="Center" Margin="18,0" Opacity="0.75" TextTrimming="CharacterEllipsis"/>
+      <Button Grid.Column="4" Name="ExitButton" Content="Exit" Width="80" Margin="0,0,10,0"/>
+      <Button Grid.Column="5" Name="CopyButton" Content="Copy" Width="90" IsDefault="True"/>
     </Grid>
   </Grid>
 </Window>

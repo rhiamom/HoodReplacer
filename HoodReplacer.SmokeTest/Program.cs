@@ -114,6 +114,7 @@ internal static class Program
         bool fixLots = args.Contains("--fix-lots");
         bool fixStruct = args.Contains("--fix-structures");
         bool delStruct = args.Contains("--del-structures");
+        bool picture = args.Contains("--picture");
         string srcCode = args[0], dstCode = args[1];
         if (!dims.ContainsKey(dstCode))
         { Console.WriteLine($"\nFAIL: unknown destination hood code."); return 1; }
@@ -150,6 +151,9 @@ internal static class Program
             Directory.CreateDirectory(scratch);
             workPath = Path.Combine(scratch, Path.GetFileName(dstPath));
             System.IO.File.Copy(dstPath, workPath, true);
+            string realPng = Path.ChangeExtension(dstPath, ".png");
+            if (picture && System.IO.File.Exists(realPng))
+                System.IO.File.Copy(realPng, Path.ChangeExtension(workPath, ".png"), true);
             Console.WriteLine($"Working copy: {workPath}");
         }
 
@@ -189,6 +193,8 @@ internal static class Program
         foreach (var e in report.Errors) Console.WriteLine($"   ERR: {e}");
         Console.WriteLine($"   changed={report.Changed} saved={report.Saved} backup={report.BackupPath ?? "(none)"}");
         if (!report.Saved) { Console.WriteLine("\nFAIL: nothing was saved."); return 1; }
+        if (picture)
+            Console.WriteLine("   " + PreviewPicture.Update(srcPath, workPath));
 
         // AFTER — re-read from disk, not from memory
         var reread = SimPe.Packages.File.LoadFromFile(workPath);

@@ -66,7 +66,25 @@ public partial class MainWindow : Window
         _sources.AddRange(browsedSrc);
         _targets.AddRange(browsedDst);
 
-        foreach (var h in HoodList.Build(folder, showEmpty))
+        List<HoodEntry> hoods;
+        try
+        {
+            hoods = HoodList.Build(folder, showEmpty);
+        }
+        catch (Exception ex) when (ex is UnauthorizedAccessException or IOException)
+        {
+            // macOS blocks reading another app's container (the App Store
+            // game keeps its hoods in one) until the user allows it.
+            hoods = new List<HoodEntry>();
+            Say("macOS blocked access to the neighborhoods folder.");
+            _ = Dialogs.Message(this, "Can't read your neighborhoods",
+                "macOS refused access to the Sims 2 neighborhoods folder:\n\n" + folder +
+                "\n\nAllow it in System Settings → Privacy & Security → Files & Folders " +
+                "(for Terminal, or whichever app launched HoodReplacer), then quit and reopen that app." +
+                "\n\n(" + ex.Message + ")");
+        }
+
+        foreach (var h in hoods)
         {
             _sources.Add(new Entry(h.ToString(), h.PackagePath, false));
             _targets.Add(new Entry(h.ToString(), h.PackagePath, false));
@@ -75,6 +93,7 @@ public partial class MainWindow : Window
         this.Get<ListBox>("ListSrc").ItemsSource = _sources;
         this.Get<ListBox>("ListDst").ItemsSource = null;
         this.Get<ListBox>("ListDst").ItemsSource = _targets;
+        if (hoods.Count == 0) return;
         int scanned = _targets.Count(x => !x.Browsed);
         Say($"{scanned} neighborhoods and sub-neighborhoods.");
     }
@@ -190,8 +209,15 @@ public partial class MainWindow : Window
             return;
         }
 
+        string picture = "";
+        if (this.Get<CheckBox>("UpdatePicture").IsChecked == true && this.Get<CheckBox>("ReplTerrain").IsChecked == true)
+        {
+            try { picture = "\n\n" + PreviewPicture.Update(src.Path, dst.Path); }
+            catch (Exception ex) { picture = "\n\nPreview picture not updated: " + ex.Message; }
+        }
+
         Say($"Done — backup at {Path.GetFileName(report.BackupPath ?? "")}");
         await Dialogs.Message(this, "Copy complete",
-            $"{name} was updated.\n\nBackup: {report.BackupPath}");
+            $"{name} was updated.\n\nBackup: {report.BackupPath}{picture}");
     }
 }
