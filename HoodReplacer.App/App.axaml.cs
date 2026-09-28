@@ -1,3 +1,13 @@
+/**************************************************************************
+ *   HoodReplacer for Mac                                                 *
+ *   HoodReplace © 2008-2010 Mootilda (http://Mootilda.ModTheSims.info)   *
+ *   macOS port © 2026 GramzeSweatshop (rhiamom@mac.com)                  *
+ *   Ported with Claude (Anthropic)                                       *
+ *   GPL v2 or later. See Licences/GPL-LICENSE.txt                        *
+ *                                                                        *
+ *   Avalonia application entry: creates the main window.                 *
+ *************************************************************************/
+
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;

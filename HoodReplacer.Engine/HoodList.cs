@@ -1,16 +1,21 @@
-/***************************************************************************
- *   Mirrors the list Mootilda builds in HoodReplace.NeighborhoodScreen():
- *   for each neighborhood folder, the main neighborhood first (always
- *   shown), then every other .package in that folder — the sub-hoods
- *   (Downtown, Suburb, University, and so on).
- *
- *   A sub-hood with no lot descriptors is "empty" and is hidden unless the
- *   user asks for it. Her comment says why: it keeps the game's hidden
- *   neighborhoods out of the list — Pets, Weather (Seasons) and Exotic
- *   Destinations (Bon Voyage) are real folders but not playable hoods.
- *   The main neighborhood is never filtered; she passes bSkipEmpty:false
- *   for it.
- ***************************************************************************/
+/**************************************************************************
+ *   HoodReplacer for Mac                                                 *
+ *   HoodReplace © 2008-2010 Mootilda (http://Mootilda.ModTheSims.info)   *
+ *   macOS port © 2026 GramzeSweatshop (rhiamom@mac.com)                  *
+ *   Ported with Claude (Anthropic)                                       *
+ *   GPL v2 or later. See Licences/GPL-LICENSE.txt                        *
+ *                                                                        *
+ *   Mirrors the list Mootilda builds in                                  *
+ *   HoodReplace.NeighborhoodScreen(): for each neighborhood folder, the  *
+ *   main neighborhood first (always shown), then every other .package in *
+ *   that folder — the sub-hoods (Downtown, Suburb, University, and so    *
+ *   on). A sub-hood with no lot descriptors is "empty" and is hidden     *
+ *   unless the user asks for it. Her comment says why: it keeps the      *
+ *   game's hidden neighborhoods out of the list — Pets, Weather          *
+ *   (Seasons) and Exotic Destinations (Bon Voyage) are real folders but  *
+ *   not playable hoods. The main neighborhood is never filtered; she     *
+ *   passes bSkipEmpty:false for it.                                      *
+ *************************************************************************/
 
 using SimPe.Interfaces.Files;
 using SimPe.Packages;

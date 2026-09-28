@@ -1,8 +1,14 @@
-/***************************************************************************
- *   HoodReplacer for Mac — main window.
- *   The replace logic is Mootilda's, in HoodReplacer.Engine; this only
- *   collects choices and answers the engine's two callbacks.
- ***************************************************************************/
+/**************************************************************************
+ *   HoodReplacer for Mac                                                 *
+ *   HoodReplace © 2008-2010 Mootilda (http://Mootilda.ModTheSims.info)   *
+ *   macOS port © 2026 GramzeSweatshop (rhiamom@mac.com)                  *
+ *   Ported with Claude (Anthropic)                                       *
+ *   GPL v2 or later. See Licences/GPL-LICENSE.txt                        *
+ *                                                                        *
+ *   HoodReplacer for Mac — main window. The replace logic is Mootilda's, *
+ *   in HoodReplacer.Engine; this only collects choices and answers the   *
+ *   engine's two callbacks.                                              *
+ *************************************************************************/
 
 using Avalonia.Controls;
 using Avalonia.Interactivity;

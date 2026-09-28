@@ -1,3 +1,15 @@
+/**************************************************************************
+ *   HoodReplacer for Mac                                                 *
+ *   HoodReplace © 2008-2010 Mootilda (http://Mootilda.ModTheSims.info)   *
+ *   macOS port © 2026 GramzeSweatshop (rhiamom@mac.com)                  *
+ *   Ported with Claude (Anthropic)                                       *
+ *   GPL v2 or later. See Licences/GPL-LICENSE.txt                        *
+ *                                                                        *
+ *   Headless harness. Verifies the ported engine against a real install  *
+ *   without a GUI: terrain round-trips, lot re-seating, structure        *
+ *   hashes.                                                              *
+ *************************************************************************/
+
 // HoodReplacer smoke test — headless harness.
 //
 // Stage 1: path discovery + neighborhood catalog.

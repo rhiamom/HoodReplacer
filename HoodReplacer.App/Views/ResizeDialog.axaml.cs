@@ -1,12 +1,18 @@
-/***************************************************************************
- *   The Avalonia stand-in for Mootilda's ResizeTerrain form.
- *   Same two mutually exclusive modes, same constraints, same wording:
- *     - "Resize to fit" off -> place the terrain at Top/Left
- *     - "Resize to fit" on  -> scale it, optionally scaling elevation too
- *   Ported from WinForms/ResizeTerrain.cs; her explanation strings are kept
- *   verbatim. She raises it from inside ReplaceNHTG, so the engine asks for
- *   it through ResizeHandler and this answers.
- ***************************************************************************/
+/**************************************************************************
+ *   HoodReplacer for Mac                                                 *
+ *   HoodReplace © 2008-2010 Mootilda (http://Mootilda.ModTheSims.info)   *
+ *   macOS port © 2026 GramzeSweatshop (rhiamom@mac.com)                  *
+ *   Ported with Claude (Anthropic)                                       *
+ *   GPL v2 or later. See Licences/GPL-LICENSE.txt                        *
+ *                                                                        *
+ *   The Avalonia stand-in for Mootilda's ResizeTerrain form. Same two    *
+ *   mutually exclusive modes, same constraints, same wording: - "Resize  *
+ *   to fit" off -> place the terrain at Top/Left - "Resize to fit" on    *
+ *   -> scale it, optionally scaling elevation too Ported from            *
+ *   WinForms/ResizeTerrain.cs; her explanation strings are kept          *
+ *   verbatim. She raises it from inside ReplaceNHTG, so the engine asks  *
+ *   for it through ResizeHandler and this answers.                       *
+ *************************************************************************/
 
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;

@@ -2,6 +2,7 @@
  *   .NET 8 / Avalonia port stubs                                          *
  *   Copyright (C) 2026 by GramzeSweatshop                                 *
  *   rhiamom@mac.com                                                       *
+ *   GNU GPLv2 or later, see LICENSE.                                      *
  *                                                                         *
  *   Replaces the legacy DatGen.DBPF.dll surface area that the Filetypes   *
  *   project relied on. We keep the original namespaces ("DatGen.DBPF.IO"  *

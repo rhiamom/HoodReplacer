@@ -1,3 +1,15 @@
+/**************************************************************************
+ *   HoodReplacer for Mac                                                 *
+ *   HoodReplace © 2008-2010 Mootilda (http://Mootilda.ModTheSims.info)   *
+ *   macOS port © 2026 GramzeSweatshop (rhiamom@mac.com)                  *
+ *   Ported with Claude (Anthropic)                                       *
+ *   GPL v2 or later. See Licences/GPL-LICENSE.txt                        *
+ *                                                                        *
+ *   Small modal helpers. ConfirmBlocking exists because the engine calls *
+ *   back from a worker thread and must wait for an answer on the UI      *
+ *   thread.                                                              *
+ *************************************************************************/
+
 using Avalonia.Controls;
 using Avalonia.Layout;
 using System.Threading.Tasks;
